@@ -1,10 +1,50 @@
+import json
 from mcpi.minecraft import Minecraft
-from mcpi.block import AIR, STONE  # You can add additional block types as needed
 
 class MinecraftController:
     def __init__(self):
         """Initialize the Minecraft game connection."""
         self.mc = Minecraft.create()
+        # Load block IDs from JSON
+        with open("blocks.json", "r") as file:
+            self.blocks = json.load(file)
+
+    def build_house(self, width, length, height, x_offset=0, y_offset=0, z_offset=0):
+        """Builds a simple house with specified dimensions and relative position."""
+        base_pos = self.mc.player.getTilePos()
+        base_pos.x += x_offset
+        base_pos.y += y_offset
+        base_pos.z += z_offset
+
+        # Using block IDs from the loaded JSON
+        wood_planks_id = self.blocks["WOOD_PLANKS"]
+        glass_id = self.blocks["GLASS"]
+        door_wood_id = self.blocks["DOOR_WOOD"]
+
+        # Build walls
+        for x in range(width):
+            for y in range(height):
+                for z in range(length):
+                    if x == 0 or x == width - 1 or z == 0 or z == length - 1 or y == 0 or y == height - 1:
+                        self.mc.setBlock(base_pos.x + x, base_pos.y + y, base_pos.z + z, wood_planks_id)
+
+        # Add a door
+        door_x = base_pos.x + width // 2
+        self.mc.setBlock(door_x, base_pos.y, base_pos.z, door_wood_id)
+        self.mc.setBlock(door_x, base_pos.y + 1, base_pos.z, door_wood_id)  # Top part of the door
+
+        # Add windows
+        window_y = base_pos.y + height // 2
+        for z in range(1, length - 1):
+            if z % 2 == 1:  # Add windows on both sides of the house
+                self.mc.setBlock(base_pos.x, window_y, base_pos.z + z, glass_id)
+                self.mc.setBlock(base_pos.x + width - 1, window_y, base_pos.z + z, glass_id)
+
+        # Add a flat roof
+        for x in range(width):
+            for z in range(length):
+                self.mc.setBlock(base_pos.x + x, base_pos.y + height, base_pos.z + z, wood_planks_id)
+
 
     def go_up(self, blocks):
         """Move the player up by a specified number of blocks."""
@@ -59,38 +99,3 @@ class MinecraftController:
             self.mc.setBlock(pos.x, pos.y - i, pos.z, AIR)
 
 
-    def build_house(self, width, length, height, x_offset=0, y_offset=0, z_offset=0):
-        """Builds a simple house with specified dimensions and relative position."""
-        # Get the current player position
-        base_pos = self.mc.player.getTilePos()
-        base_pos.x += x_offset
-        base_pos.y += y_offset
-        base_pos.z += z_offset
-
-        # Build walls
-        for x in range(width):
-            for y in range(height):
-                for z in range(length):
-                    if x == 0 or x == width - 1 or z == 0 or z == length - 1:
-                        self.mc.setBlock(base_pos.x + x, base_pos.y + y, base_pos.z + z, WOOD_PLANKS)
-                    elif y == 0 or y == height - 1:
-                        self.mc.setBlock(base_pos.x + x, base_pos.y + y, base_pos.z + z, WOOD_PLANKS)
-
-        # Add a door
-        door_x = base_pos.x + width // 2
-        door_y = base_pos.y
-        door_z = base_pos.z
-        self.mc.setBlock(door_x, door_y, door_z, DOOR_WOOD)
-        self.mc.setBlock(door_x, door_y + 1, door_z, DOOR_WOOD)  # Top part of the door
-
-        # Add windows
-        window_y = base_pos.y + height // 2
-        for z in range(1, length - 1):
-            if z % 2 == 1:  # Add windows on both sides of the house
-                self.mc.setBlock(base_pos.x, window_y, base_pos.z + z, GLASS)
-                self.mc.setBlock(base_pos.x + width - 1, window_y, base_pos.z + z, GLASS)
-
-        # Add a flat roof
-        for x in range(width):
-            for z in range(length):
-                self.mc.setBlock(base_pos.x + x, base_pos.y + height, base_pos.z + z, WOOD_PLANKS)
