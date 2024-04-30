@@ -1,5 +1,7 @@
 from controller import MinecraftController
-                       
+import collections
+      
+collections.Iterable = collections.abc.Iterable\
 
 if __name__ == "__main__":
     mc_controller = MinecraftController()
