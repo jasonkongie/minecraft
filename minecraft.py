@@ -1,11 +1,6 @@
-from mcpi.minecraft import Minecraft
-import collections
-collections.Iterable = collections.abc.Iterable\
+from controller import MinecraftController
                        
-mc = Minecraft.create()
-x,y,z = mc.player.getPos()
-print(x, y, z)
 
-mc.player.setPos(x, y+20, z)
-x,y,z = mc.player.getPos()
-print(x, y, z)
+if __name__ == "__main__":
+    mc_controller = MinecraftController()
+    mc_controller.build_house(width=10, length=10, height=5, x_offset=5, y_offset=0, z_offset=5)
