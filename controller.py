@@ -83,8 +83,9 @@ class MinecraftController:
 
     def remove_block(self, x_offset=0, y_offset=0, z_offset=0):
         """Remove a block relative to the player's current position."""
+        air_id = self.get_block_id("AIR")
         pos = self.mc.player.getTilePos()
-        self.mc.setBlock(pos.x + x_offset, pos.y + y_offset, pos.z + z_offset, AIR)
+        self.mc.setBlock(pos.x + x_offset, pos.y + y_offset, pos.z + z_offset, air_id)
 
     def build_column(self, block_type, height):
         """Build a vertical column of blocks above the player."""
